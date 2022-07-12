@@ -21,7 +21,12 @@ verify_tx <txHash>
 Example
 
 ```
-verify_tx 0xe3b8c358ed2017951b1832f34baa650f98acbac170e75b6562d97d60ff58075f
-Found : 79 transactions on block : 15127889
-Verified sucessfully,
+./cmd/verify_tx/verify_tx 0x0b41fc4c1d8518cdeda9812269477256bdc415eb39c4531885ff9728d6ad096b
+Found : 4 transactions on block : 10593417
+0xab41f886be23cd786d8a69a72b0f988ea72e0b2e03970d0798f5e03763a442cc : 0xab41f886be23cd786d8a69a72b0f988ea72e0b2e03970d0798f5e03763a442cc
+Verification successful
 ```
+
+#### Docs
+
+![Docs](docs/trie.md)

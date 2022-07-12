@@ -93,7 +93,7 @@ func main() {
 		log.Fatalf("Failed to prove the node [%d] : %v", txIndex, err)
 	}
 	// Verify proof
-	verifyValue, err := trie.VerifyProof(merkleTrie.Hash(), proveKey, proof)
+	verifyValue, err := trie.VerifyProof(block.Header().TxHash, proveKey, proof)
 	if err != nil {
 		log.Fatalf("Failed to verify proof : %v", err)
 	}
@@ -108,5 +108,11 @@ func main() {
 		fmt.Printf("Verification failed")
 		os.Exit(1)
 	}
+	if block.Header().TxHash == merkleTrie.Hash() {
+		fmt.Printf("%v : %v \n", block.Header().TxHash, merkleTrie.Hash())
+	} else {
+		fmt.Printf("Hashes doesnt match")
+	}
+
 	fmt.Println("Verification successful")
 }
