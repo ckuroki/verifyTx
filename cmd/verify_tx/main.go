@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
@@ -64,9 +65,6 @@ func main() {
 
 	txIndex := -1
 	for ix, transaction := range block.Transactions() {
-		if txHash == transaction.Hash() {
-			txIndex = ix
-		}
 		k, err := rlp.EncodeToBytes(uint(ix))
 		if err != nil {
 			log.Fatal("encoding key [%d] : %s ", ix, err.Error())
@@ -74,6 +72,9 @@ func main() {
 		v, err := rlp.EncodeToBytes(transaction)
 		if err != nil {
 			log.Fatal("encoding transaction [%d] - %v : %s ", ix, transaction, err.Error())
+		}
+		if txHash == transaction.Hash() {
+			txIndex = ix
 		}
 		merkleTrie.Update(k, v)
 	}
@@ -92,9 +93,20 @@ func main() {
 		log.Fatalf("Failed to prove the node [%d] : %v", txIndex, err)
 	}
 	// Verify proof
-	_, err = trie.VerifyProof(merkleTrie.Hash(), proveKey, proof)
+	verifyValue, err := trie.VerifyProof(merkleTrie.Hash(), proveKey, proof)
 	if err != nil {
 		log.Fatalf("Failed to verify proof : %v", err)
 	}
-	fmt.Println("Verified sucessfully,")
+	// compare verified value with transaction
+	transaction := block.Transaction(txHash)
+	txValue, err := rlp.EncodeToBytes(transaction)
+	if err != nil {
+		log.Fatal("encoding transaction %v : %s ", transaction, err.Error())
+	}
+	res := bytes.Compare(verifyValue, txValue)
+	if res != 0 {
+		fmt.Printf("Verification failed")
+		os.Exit(1)
+	}
+	fmt.Println("Verification successful")
 }
